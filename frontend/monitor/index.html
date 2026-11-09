@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Моніторинг · Monitor Production</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/monitor/monitor.css">
+</head>
+<body class="monitor">
+  <header>
+    <h1>Моніторинг виробництва</h1>
+    <span class="meta">Добовий план: <strong id="plan">–</strong></span>
+    <span class="clock" id="clock"></span>
+    <button id="sound" class="secondary" type="button">🔊 Увімкнути звук</button>
+    <a href="/">Оператор</a>
+  </header>
+
+  <div id="error" class="result bad"></div>
+  <main id="cards" class="cards"></main>
+
+  <!-- Віконце, з-за якого раз на пів години вибігає качечка -->
+  <div class="duck-window" aria-hidden="true">
+    <div class="duck" id="duck">🦆</div>
+    <div class="bubble" id="bubble">Кря!</div>
+  </div>
+
+  <script type="module" src="/monitor/monitor.js"></script>
+</body>
+</html>

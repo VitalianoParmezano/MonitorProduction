@@ -1,0 +1,27 @@
+body.admin { font-size: 16px; padding: 0 1.5rem 3rem; }
+.admin > header { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding: 1rem 0; }
+.admin h1 { margin: 0; font-size: 1.4rem; }
+.admin h2 { font-size: 1.1rem; margin: 1.2rem 0 .6rem; }
+.admin nav { display: flex; gap: .4rem; flex: 1; }
+.admin nav button.active { background: var(--accent); color: #fff; }
+.admin section { background: var(--card); border-radius: 10px; padding: 1rem 1.2rem; }
+.cols { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(320px, 1.3fr); gap: 1.5rem; }
+@media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+.form { display: grid; gap: .8rem; }
+.form label { display: grid; gap: .25rem; font-weight: 600; }
+.inline { display: flex; gap: .6rem; max-width: 520px; }
+.actions { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+.admin table { width: 100%; border-collapse: collapse; }
+.admin th, .admin td { padding: .4rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.admin td.actions-cell { white-space: nowrap; text-align: right; }
+.admin td button { padding: .25em .7em; font-size: .85rem; margin-left: .3rem; }
+.hint { color: var(--muted); font-size: .9rem; }
+code { background: #eef0f3; padding: .1em .35em; border-radius: 4px; font-size: .85em; }
+.btn-like { display: inline-block; padding: .6em 1.2em; border-radius: 8px; background: #e5e8ec; cursor: pointer; }
+.file-inline { cursor: pointer; }
+#msg { margin-bottom: 1rem; font-size: 1rem; min-height: 0; padding: .6rem 1rem; }
+#msg:empty { display: none; }
+
+/* Превʼю: реальний розмір 1280×720, масштабується під ширину колонки */
+.preview-wrap { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid var(--line); }
+.preview-wrap iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; border: 0; transform-origin: top left; background: var(--bg); }

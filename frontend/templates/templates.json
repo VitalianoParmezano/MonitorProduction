@@ -1,0 +1,20 @@
+{
+  "measurement": {
+    "title": "Вимірювання параметра",
+    "params": {
+      "label": { "type": "text", "title": "Підпис поля" },
+      "unit": { "type": "text", "title": "Одиниці" },
+      "product_id": { "type": "number", "title": "Створювати виріб моделі з ID (необовʼязково)" }
+    }
+  },
+  "photo": {
+    "title": "Фотофіксація",
+    "params": {
+      "product_id": { "type": "number", "title": "Створювати виріб моделі з ID (необовʼязково)" }
+    }
+  },
+  "final-test": {
+    "title": "Фінальний тест",
+    "params": {}
+  }
+}

@@ -1,0 +1,26 @@
+body.monitor { padding: 1rem 1.5rem 9rem; }
+.monitor > header { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.monitor h1 { margin: 0; font-size: 1.5rem; flex: 1; }
+.monitor .meta { color: var(--muted); }
+.monitor .clock { font-variant-numeric: tabular-nums; font-weight: 600; }
+.monitor button { padding: .3em .8em; font-size: .85rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.card { background: var(--card); border-radius: 12px; padding: 1rem 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.card .num { color: var(--muted); font-size: .9rem; }
+.card .title { font-weight: 600; margin-bottom: .6rem; min-height: 1.4em; }
+.card .nums { font-size: 2.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.card .nums small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+.bar { height: 10px; background: #e5e8ec; border-radius: 6px; overflow: hidden; margin-top: .6rem; }
+.bar > div { height: 100%; background: var(--accent); transition: width .4s; }
+.card.done .bar > div { background: var(--ok); }
+
+/* Качечка: ховається за віконцем, раз на пів години вискакує і крякає */
+.duck-window { position: fixed; right: 2rem; bottom: 1.5rem; width: 110px; height: 110px;
+  border: 6px solid #8a5a2b; border-radius: 10px; background: #bfe3f7; overflow: hidden; }
+.duck { position: absolute; left: 50%; bottom: -90px; font-size: 64px; transform: translateX(-50%); transition: bottom .5s ease-out; }
+.duck-window.out .duck { bottom: 6px; animation: wiggle .25s ease-in-out infinite alternate; }
+.bubble { position: fixed; right: 9rem; bottom: 6rem; background: #fff; border: 2px solid #333; border-radius: 14px;
+  padding: .3rem .8rem; font-weight: 700; opacity: 0; transition: opacity .2s; }
+.duck-window.out ~ .bubble, .bubble.show { opacity: 1; }
+@keyframes wiggle { from { transform: translateX(-50%) rotate(-6deg); } to { transform: translateX(-50%) rotate(6deg); } }

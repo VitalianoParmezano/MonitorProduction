@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Адміністрування · Monitor Production</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="admin">
+  <header>
+    <h1>Адміністрування</h1>
+    <nav id="tabs">
+      <button data-tab="ws">Робочі місця</button>
+      <button data-tab="types" class="secondary">Типи продукції</button>
+      <button data-tab="products" class="secondary">Моделі</button>
+      <button data-tab="plan" class="secondary">План</button>
+    </nav>
+    <span class="links"><a href="/">Оператор</a> · <a href="/monitor/">Моніторинг</a></span>
+  </header>
+  <div id="msg" class="result" role="status"></div>
+
+  <!-- Робочі місця -->
+  <section id="tab-ws">
+    <div class="cols">
+      <div>
+        <h2>Список</h2>
+        <table id="ws-table"></table>
+        <h2 id="ws-form-title">Нове робоче місце</h2>
+        <form id="ws-form" class="form" autocomplete="off">
+          <label>Номер <input name="number" type="number" min="1" required></label>
+          <label>Назва <input name="name"></label>
+          <label>Шаблон <select name="template" required></select></label>
+          <div id="ws-params" class="form"></div>
+          <label>Ключ результату в q_tests_data
+            <input name="result_key" placeholder="напр. dielectric" pattern="[A-Za-z0-9_\-]{1,64}">
+          </label>
+          <div class="actions">
+            <button type="submit">Зберегти</button>
+            <button type="button" class="secondary" id="ws-reset">Нове</button>
+          </div>
+        </form>
+      </div>
+      <div>
+        <h2>Превʼю робочої станції</h2>
+        <div class="preview-wrap" id="preview-wrap">
+          <iframe id="preview" src="/index.html?preview=1" title="Превʼю"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Типи -->
+  <section id="tab-types" hidden>
+    <h2>Типи продукції</h2>
+    <form id="type-form" class="inline">
+      <input name="name" placeholder="Назва типу" required maxlength="64">
+      <button type="submit">Додати</button>
+    </form>
+    <table id="types-table"></table>
+  </section>
+
+  <!-- Моделі -->
+  <section id="tab-products" hidden>
+    <h2>Моделі продукції</h2>
+    <table id="products-table"></table>
+    <h2 id="product-form-title">Нова модель</h2>
+    <form id="product-form" class="form" autocomplete="off">
+      <label>Назва <input name="name" required maxlength="255"></label>
+      <label>Артикул <input name="article" required maxlength="100"></label>
+      <label>Тип <select name="type_id" required></select></label>
+      <label>Опис <textarea name="description" rows="2"></textarea></label>
+      <label>Характеристики та допуски (JSON)
+        <textarea name="characteristics" rows="8" spellcheck="false">{}</textarea>
+      </label>
+      <p class="hint">Ліміти результатів: <code>{"limits": {"ключ": {"min": 100, "max": 500, "range_min": 0, "range_max": 10000}}}</code>.
+        <code>min/max</code> визначають «в нормі / поза допуском», <code>range_min/range_max</code> відсікають помилки вводу.</p>
+      <div class="actions">
+        <button type="submit">Зберегти</button>
+        <button type="button" class="secondary" id="product-reset">Нова</button>
+        <label class="file-inline" id="datasheet-label" hidden>
+          <span class="btn-like">Завантажити datasheet (PDF)</span>
+          <input type="file" id="datasheet-file" accept="application/pdf" hidden>
+        </label>
+      </div>
+    </form>
+  </section>
+
+  <!-- План -->
+  <section id="tab-plan" hidden>
+    <h2>Добовий план</h2>
+    <form id="plan-form" class="inline">
+      <input name="daily_plan" type="number" min="0" required>
+      <button type="submit">Зберегти</button>
+    </form>
+    <p class="hint">План показується на вкладці моніторингу для кожного робочого місця.</p>
+  </section>
+
+  <script type="module" src="/admin/admin.js"></script>
+</body>
+</html>

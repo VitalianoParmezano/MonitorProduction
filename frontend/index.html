@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monitor Production</title>
+  <link rel="stylesheet" href="/shared/style.css">
+</head>
+<body class="shell">
+  <header>
+    <span class="clock" id="clock"></span>
+    <span class="ws" id="ws-title"></span>
+    <button id="change-ws" type="button">Змінити місце</button>
+  </header>
+
+  <main>
+    <section class="login" id="login">
+      <h1>Робоче місце</h1>
+      <form id="login-form" autocomplete="off">
+        <input id="ws-number" type="number" min="1" inputmode="numeric" placeholder="Номер" autofocus>
+        <button type="submit">Увійти</button>
+      </form>
+      <p class="result bad" id="login-error"></p>
+      <p class="links"><a href="/monitor/">Моніторинг</a> · <a href="/admin/">Адміністрування</a></p>
+    </section>
+
+    <section id="app" hidden>
+      <div id="content"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/shared/shell.js"></script>
+</body>
+</html>

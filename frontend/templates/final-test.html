@@ -1,0 +1,20 @@
+<div class="tpl">
+  <label>Штрихкод
+    <input data-scan data-barcode autocomplete="off">
+  </label>
+  <div data-unit hidden>
+    <p><strong data-product></strong></p>
+    <table>
+      <thead><tr><th>Параметр</th><th>Значення</th><th>Стан</th></tr></thead>
+      <tbody data-rows></tbody>
+    </table>
+    <label style="margin-top:1rem">Примітка (необовʼязково)
+      <textarea data-note rows="2" maxlength="1000"></textarea>
+    </label>
+    <div class="verdicts" style="margin-top:1rem">
+      <button type="button" class="pass" data-verdict="ok">Придатний</button>
+      <button type="button" class="fail" data-verdict="nok">Непридатний</button>
+    </div>
+  </div>
+  <div class="result" data-result></div>
+</div>
