@@ -26,7 +26,9 @@ async function loadTemplate(name, cfg) {
   if (cleanup) { cleanup(); cleanup = null; }
   $('content').innerHTML = html;
   cleanup = mod.init($('content'), { ...cfg, preview: isPreview }) || null;
-  focusScan($('content'));
+  // У превʼю не перехоплюємо фокус: iframe має лишатися «неактивним»,
+  // інакше при введенні тексту в адмінці фокус тікає на штрихкод у превʼю.
+  if (!isPreview) focusScan($('content'));
 }
 
 function showApp(title) {

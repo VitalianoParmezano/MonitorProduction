@@ -24,4 +24,4 @@ code { background: #eef0f3; padding: .1em .35em; border-radius: 4px; font-size: 
 
 /* Превʼю: реальний розмір 1280×720, масштабується під ширину колонки */
 .preview-wrap { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid var(--line); }
-.preview-wrap iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; border: 0; transform-origin: top left; background: var(--bg); }
+.preview-wrap iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; border: 0; transform-origin: top left; background: var(--bg); pointer-events: none; user-select: none; }
