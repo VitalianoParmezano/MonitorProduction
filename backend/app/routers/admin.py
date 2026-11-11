@@ -115,7 +115,7 @@ class WorkstationIn(BaseModel):
     name: str | None = Field(None, max_length=255)
     template: str = Field(pattern=r"^[a-z0-9-]+$", max_length=64)
     template_params: dict = Field(default_factory=dict)
-    result_key: str | None = Field(None, pattern=r"^[A-Za-z0-9_-]{1,64}$")
+    result_key: str | None = Field(None, max_length=64)
 
 
 _WS_COLUMNS = "id, number, name, template, template_params, result_key"
@@ -128,19 +128,21 @@ async def list_workstations():
 
 @router.post("/workstations", status_code=201)
 async def create_workstation(body: WorkstationIn):
+    result_key = (body.result_key or "").strip() or None
     return await db.fetch_one(
         f"INSERT INTO workstations (number, name, template, template_params, result_key) "
         f"VALUES (%s, %s, %s, %s, %s) RETURNING {_WS_COLUMNS}",
-        (body.number, body.name, body.template, Jsonb(body.template_params), body.result_key),
+        (body.number, body.name, body.template, Jsonb(body.template_params), result_key),
     )
 
 
 @router.put("/workstations/{ws_id}")
 async def update_workstation(ws_id: int, body: WorkstationIn):
+    result_key = (body.result_key or "").strip() or None
     row = await db.fetch_one(
         f"UPDATE workstations SET number=%s, name=%s, template=%s, template_params=%s, result_key=%s "
         f"WHERE id=%s RETURNING {_WS_COLUMNS}",
-        (body.number, body.name, body.template, Jsonb(body.template_params), body.result_key, ws_id),
+        (body.number, body.name, body.template, Jsonb(body.template_params), result_key, ws_id),
     )
     if not row:
         raise HTTPException(404, "Робоче місце не знайдено")

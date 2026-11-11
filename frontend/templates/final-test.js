@@ -26,6 +26,11 @@ export function init(root, cfg) {
     return td;
   }
 
+  function fmt(value) {
+    if (typeof value === 'boolean') return value ? 'так' : 'ні';
+    return String(value);
+  }
+
   async function lookup() {
     const code = input.value.trim();
     if (!code) return;
@@ -42,7 +47,7 @@ export function init(root, cfg) {
       }
       for (const [key, v] of entries) {
         const tr = document.createElement('tr');
-        tr.append(cell(key), cell(String(v.value)), cell(v.ok ? 'в нормі' : 'поза допуском', v.ok ? 'badge-ok' : 'badge-bad'));
+        tr.append(cell(key), cell(fmt(v.value)), cell(v.ok ? 'в нормі' : 'поза допуском', v.ok ? 'badge-ok' : 'badge-bad'));
         rows.append(tr);
       }
       unitBox.hidden = false;

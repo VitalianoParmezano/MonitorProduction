@@ -28,12 +28,20 @@
         <table id="ws-table"></table>
         <h2 id="ws-form-title">Нове робоче місце</h2>
         <form id="ws-form" class="form" autocomplete="off">
-          <label>Номер <input name="number" type="number" min="1" required></label>
-          <label>Назва <input name="name"></label>
-          <label>Шаблон <select name="template" required></select></label>
+          <label><span class="lab">Номер
+              <span class="q" title="Номер, який оператор вводить на вході на робочому місці.">?</span></span>
+            <input name="number" type="number" min="1" required></label>
+          <label><span class="lab">Назва
+              <span class="q" title="Людська назва місця. Показується в шапці оператора та на моніторингу.">?</span></span>
+            <input name="name"></label>
+          <label><span class="lab">Шаблон
+              <span class="q" title="Який інтерфейс бачитиме оператор на цьому місці: вимірювання числа, перевірка так/ні, фото або фінальний тест.">?</span></span>
+            <select name="template" required></select></label>
+          <p class="hint template-hint" id="template-hint"></p>
           <div id="ws-params" class="form"></div>
-          <label>Ключ результату в q_tests_data
-            <input name="result_key" placeholder="напр. dielectric" pattern="[A-Za-z0-9_\-]{1,64}">
+          <label><span class="lab">Назва параметра (куди записується результат)
+              <span class="q" title="Назва параметра, куди це місце записує результат. Має точно збігатися з назвою параметра в допусках моделі. Можна кирилицею, з пробілами та апострофом.">?</span></span>
+            <input name="result_key" placeholder="напр. dielectric або зв'язок з мережею" maxlength="64">
           </label>
           <div class="actions">
             <button type="submit">Зберегти</button>
@@ -70,11 +78,15 @@
       <label>Артикул <input name="article" required maxlength="100"></label>
       <label>Тип <select name="type_id" required></select></label>
       <label>Опис <textarea name="description" rows="2"></textarea></label>
-      <label>Характеристики та допуски (JSON)
-        <textarea name="characteristics" rows="8" spellcheck="false">{}</textarea>
-      </label>
-      <p class="hint">Ліміти результатів: <code>{"limits": {"ключ": {"min": 100, "max": 500, "range_min": 0, "range_max": 10000}}}</code>.
-        <code>min/max</code> визначають «в нормі / поза допуском», <code>range_min/range_max</code> відсікають помилки вводу.</p>
+      <div class="limits">
+        <div class="limits-head">
+          <h3>Допуски параметрів</h3>
+          <button type="button" class="secondary" id="limits-add">+ Додати параметр</button>
+        </div>
+        <div id="limits-builder"></div>
+        <p class="hint" id="limits-empty">Поки що допусків немає. Натисніть «Додати параметр», щоб вказати, які значення вважати «в нормі».</p>
+        <p class="hint">Число: <code>min/max</code> — «в нормі / поза допуском», <code>range_min/range_max</code> — межі правдоподібного вводу. Так/ні та вибір зі списку: <code>expected</code> / <code>allowed</code>.</p>
+      </div>
       <div class="actions">
         <button type="submit">Зберегти</button>
         <button type="button" class="secondary" id="product-reset">Нова</button>

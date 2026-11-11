@@ -50,7 +50,15 @@ async def _ensure_unit(conn, ws: dict, barcode: str) -> dict:
 
 
 def _evaluate(value, limits: dict | None, client_ok: bool | None) -> bool:
-    """Числове значення з лімітами перевіряє бекенд; в інших випадках довіряємо шаблону."""
+    """Числове значення з лімітами перевіряє бекенд; нечислове — через expected/allowed;
+    в інших випадках довіряємо шаблону (client_ok)."""
+    if limits:
+        # Правила для нечислових результатів мають пріоритет над client_ok.
+        if "expected" in limits:
+            return value == limits["expected"]
+        if "allowed" in limits:
+            return value in limits["allowed"]
+
     is_number = isinstance(value, (int, float)) and not isinstance(value, bool)
     if is_number and limits:
         lo, hi = limits.get("range_min"), limits.get("range_max")

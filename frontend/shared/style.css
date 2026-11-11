@@ -38,6 +38,7 @@ a { color: var(--accent); }
 #content .verdicts button { font-size: 1.5rem; padding: .9em; }
 #content .verdicts .pass { background: var(--ok); }
 #content .verdicts .fail { background: var(--bad); }
+#content .check-q { font-size: 1.6rem; font-weight: 700; }
 #content table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; }
 #content td, #content th { padding: .45rem .7rem; border-bottom: 1px solid var(--line); text-align: left; font-size: 1rem; }
 #content .badge-ok { color: var(--ok); font-weight: 700; }

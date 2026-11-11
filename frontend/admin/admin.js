@@ -72,10 +72,46 @@ function fitPreview() {
 }
 window.addEventListener('resize', fitPreview);
 
+function updateTemplateHint() {
+  const def = manifest[wf.template.value];
+  $('#template-hint').textContent = def?.description || '';
+}
+
 function renderTemplateOptions() {
   wf.template.replaceChildren(
     ...Object.entries(manifest).map(([key, def]) => h('option', { value: key }, def.title || key)),
   );
+  updateTemplateHint();
+}
+
+function modelSelect(key, value) {
+  const sel = h('select', { 'data-param': key, 'data-kind': 'model' },
+    h('option', { value: '' }, '— не обирати —'),
+    ...products.map((p) => h('option', { value: String(p.id) }, `${p.article} — ${p.name}`)));
+  if (value != null) sel.value = String(value);
+  return sel;
+}
+
+function fillModelSelects() {
+  for (const sel of document.querySelectorAll('#ws-params select[data-kind="model"]')) {
+    const current = sel.value;
+    sel.replaceChildren(
+      h('option', { value: '' }, '— не обирати —'),
+      ...products.map((p) => h('option', { value: String(p.id) }, `${p.article} — ${p.name}`)),
+    );
+    if ([...sel.options].some((o) => o.value === current)) sel.value = current;
+  }
+}
+
+function paramInput(key, def, value) {
+  if (def.type === 'model') return modelSelect(key, value);
+  const input = h('input', {
+    type: def.type === 'number' ? 'number' : 'text',
+    'data-param': key,
+    'data-kind': def.type === 'number' ? 'number' : 'text',
+  });
+  if (value != null) input.value = value;
+  return input;
 }
 
 function renderParams(values = {}, keepExtra = false) {
@@ -84,9 +120,9 @@ function renderParams(values = {}, keepExtra = false) {
   box.replaceChildren();
   extraParams = {};
   for (const [key, def] of Object.entries(defs)) {
-    const input = h('input', { type: def.type === 'number' ? 'number' : 'text', 'data-param': key });
-    if (values[key] != null) input.value = values[key];
-    box.append(h('label', {}, def.title || key, input));
+    const lab = h('span', { class: 'lab' }, def.title || key,
+      def.hint ? h('span', { class: 'q', title: def.hint }, '?') : null);
+    box.append(h('label', {}, lab, paramInput(key, def, values[key])));
   }
   if (keepExtra) {
     for (const [k, v] of Object.entries(values)) if (!(k in defs)) extraParams[k] = v;
@@ -98,7 +134,8 @@ function collectParams() {
   for (const input of $('#ws-params').querySelectorAll('[data-param]')) {
     const v = input.value.trim();
     if (v === '') continue;
-    params[input.dataset.param] = input.type === 'number' ? Number(v) : v;
+    const kind = input.dataset.kind;
+    params[input.dataset.param] = (kind === 'number' || kind === 'model') ? Number(v) : v;
   }
   return params;
 }
@@ -134,6 +171,7 @@ function resetWs() {
   editingWs = null;
   wsForm.reset();
   $('#ws-form-title').textContent = 'Нове робоче місце';
+  updateTemplateHint();
   renderParams();
   updatePreview();
 }
@@ -148,6 +186,7 @@ function editWs(ws) {
   }
   wf.template.value = ws.template;
   wf.result_key.value = ws.result_key || '';
+  updateTemplateHint();
   renderParams(ws.template_params || {}, true);
   updatePreview();
 }
@@ -163,7 +202,7 @@ function deleteWs(ws) {
 }
 
 wsForm.addEventListener('input', updatePreview);
-wf.template.addEventListener('change', () => { renderParams(collectParams()); updatePreview(); });
+wf.template.addEventListener('change', () => { updateTemplateHint(); renderParams(collectParams()); updatePreview(); });
 $('#ws-reset').addEventListener('click', resetWs);
 $('#preview').addEventListener('load', () => { fitPreview(); updatePreview(); });
 wsForm.addEventListener('submit', (e) => {
@@ -243,6 +282,8 @@ $('#type-form').addEventListener('submit', (e) => {
 let products = [];
 let editingProduct = null;
 const pf = $('#product-form').elements;
+const limitsBox = $('#limits-builder');
+let productExtra = {};   // ключі characteristics поза limits — зберігаємо недоторканими
 
 function renderProducts() {
   table($('#products-table'), ['ID', 'Назва', 'Артикул', 'Тип', 'Datasheet', ''], products.map((p) => h('tr', {},
@@ -261,12 +302,116 @@ function renderProducts() {
 async function loadProducts() {
   products = await api(`${API}/products`);
   renderProducts();
+  fillModelSelects();
 }
+
+const LIMIT_TYPES = [
+  { value: 'number', title: 'Число (min/max)' },
+  { value: 'expected', title: 'Так/ні (норма)' },
+  { value: 'allowed', title: 'Вибір зі списку' },
+];
+
+function limitRow(data = {}) {
+  const row = h('div', { class: 'limit-row' });
+
+  const key = h('input', { type: 'text', placeholder: 'напр. dielectric', maxlength: '64', 'data-k': 'key' });
+  if (data.key) key.value = data.key;
+
+  const typeSel = h('select', { 'data-k': 'type' },
+    ...LIMIT_TYPES.map((t) => h('option', { value: t.value }, t.title)));
+  typeSel.value = data.type || 'number';
+
+  const fields = h('div', { 'data-k': 'fields' });
+
+  function num(name, val) {
+    const input = h('input', { type: 'number', 'data-k': name, placeholder: name });
+    if (val != null) input.value = val;
+    return h('label', {}, name, input);
+  }
+
+  function renderFields() {
+    fields.replaceChildren();
+    if (typeSel.value === 'number') {
+      fields.append(h('div', { class: 'grid4' },
+        num('min', data.min), num('max', data.max),
+        num('range_min', data.range_min), num('range_max', data.range_max)));
+    } else if (typeSel.value === 'expected') {
+      const sel = h('select', { 'data-k': 'expected' },
+        h('option', { value: 'true' }, 'Так (true)'),
+        h('option', { value: 'false' }, 'Ні (false)'));
+      sel.value = data.expected === false ? 'false' : 'true';
+      fields.append(h('label', {}, 'Норма (що вважати «в нормі»)', sel));
+    } else {
+      const input = h('input', { type: 'text', placeholder: 'напр. zigbee, matter', 'data-k': 'allowed' });
+      if (data.allowed) input.value = data.allowed.join(', ');
+      fields.append(h('label', {}, 'Дозволені значення (через кому)', input));
+    }
+  }
+
+  typeSel.addEventListener('change', renderFields);
+  renderFields();
+
+  row.append(
+    h('label', {}, 'Назва параметра (збігається з ключем робочого місця)', key),
+    h('label', {}, 'Тип значення', typeSel),
+    fields,
+    h('button', { type: 'button', class: 'danger limit-remove', onclick: () => { row.remove(); updateLimitsEmpty(); } }, 'Видалити'),
+  );
+  return row;
+}
+
+function updateLimitsEmpty() {
+  $('#limits-empty').hidden = limitsBox.children.length > 0;
+}
+
+function renderLimits(characteristics) {
+  limitsBox.replaceChildren();
+  const limits = (characteristics || {}).limits || {};
+  for (const [key, l] of Object.entries(limits)) {
+    const data = { key };
+    if (l && typeof l === 'object') {
+      if ('expected' in l) { data.type = 'expected'; data.expected = l.expected; }
+      else if ('allowed' in l) { data.type = 'allowed'; data.allowed = l.allowed; }
+      else { data.type = 'number'; data.min = l.min; data.max = l.max; data.range_min = l.range_min; data.range_max = l.range_max; }
+    }
+    limitsBox.append(limitRow(data));
+  }
+  updateLimitsEmpty();
+}
+
+function collectLimits() {
+  const limits = {};
+  for (const row of limitsBox.querySelectorAll('.limit-row')) {
+    const key = row.querySelector('[data-k="key"]').value.trim();
+    if (!key) continue;
+    const type = row.querySelector('[data-k="type"]').value;
+    if (type === 'number') {
+      const l = {};
+      for (const n of ['min', 'max', 'range_min', 'range_max']) {
+        const el = row.querySelector(`[data-k="${n}"]`);
+        if (el && el.value.trim() !== '') l[n] = Number(el.value);
+      }
+      limits[key] = l;
+    } else if (type === 'expected') {
+      limits[key] = { expected: row.querySelector('[data-k="expected"]').value === 'true' };
+    } else {
+      const raw = row.querySelector('[data-k="allowed"]').value;
+      limits[key] = { allowed: raw.split(',').map((s) => s.trim()).filter(Boolean) };
+    }
+  }
+  return limits;
+}
+
+$('#limits-add').addEventListener('click', () => {
+  limitsBox.append(limitRow());
+  updateLimitsEmpty();
+});
 
 function resetProduct() {
   editingProduct = null;
   $('#product-form').reset();
-  pf.characteristics.value = '{}';
+  productExtra = {};
+  renderLimits({});
   $('#product-form-title').textContent = 'Нова модель';
   $('#datasheet-label').hidden = true;
 }
@@ -278,7 +423,10 @@ function editProduct(p) {
   pf.article.value = p.article;
   pf.type_id.value = p.type_id;
   pf.description.value = p.description || '';
-  pf.characteristics.value = JSON.stringify(p.characteristics || {}, null, 2);
+  const chars = p.characteristics || {};
+  productExtra = { ...chars };
+  delete productExtra.limits;
+  renderLimits(chars);
   $('#datasheet-label').hidden = false;
   $('#product-form').scrollIntoView({ behavior: 'smooth' });
 }
@@ -296,14 +444,9 @@ function deleteProduct(p) {
 $('#product-reset').addEventListener('click', resetProduct);
 $('#product-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  let characteristics;
-  try {
-    characteristics = JSON.parse(pf.characteristics.value || '{}');
-    if (characteristics === null || typeof characteristics !== 'object' || Array.isArray(characteristics)) throw new Error();
-  } catch {
-    notify('bad', 'Характеристики мають бути коректним JSON-обʼєктом');
-    return;
-  }
+  const limits = collectLimits();
+  const characteristics = { ...productExtra };
+  if (Object.keys(limits).length) characteristics.limits = limits;
   guard(async () => {
     const body = {
       name: pf.name.value.trim(),
