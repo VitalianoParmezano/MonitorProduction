@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Робоче місце</title>
+  <link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div id="clock"></div>
+    <div id="station-title"></div>
+    <div id="batch-info">Партію не відкрито</div>
+  </header>
+
+  <main>
+    <div id="message" class="message" hidden></div>
+
+    <!-- Місце 1 -->
+    <section id="panel-1" class="panel card" hidden>
+      <h2>Програмування драйвера</h2>
+      <div id="batch-hint" class="hint"></div>
+      <label>Штрихкод світильника
+        <input id="barcode-1" data-scan autocomplete="off">
+      </label>
+      <label>Штрихкод драйвера
+        <input id="barcode-driver" data-scan autocomplete="off">
+      </label>
+      <button id="submit-1" class="primary">Зберегти</button>
+    </section>
+
+    <!-- Місця 2 і 3 -->
+    <section id="panel-23" class="panel card" hidden>
+      <h2 id="title-23"></h2>
+      <label>Штрихкод світильника
+        <input id="barcode-23" data-scan autocomplete="off">
+      </label>
+      <div id="norm" class="norm" hidden></div>
+      <label>Значення
+        <input id="value" data-scan autocomplete="off" inputmode="decimal">
+      </label>
+      <button id="submit-23" class="primary">Зберегти</button>
+    </section>
+
+    <!-- Місце 4 -->
+    <section id="panel-4" class="panel card" hidden>
+      <h2>Перевірка роботоздатності</h2>
+      <label>Штрихкод світильника
+        <input id="barcode-4" data-scan autocomplete="off">
+      </label>
+      <video id="camera" autoplay playsinline muted></video>
+      <canvas id="canvas" hidden></canvas>
+      <div>
+        <label>Камера
+          <select id="camera-select"></select>
+        </label>
+      </div>
+      <div id="elec-params" class="hint">Електричні параметри: Z2M ще не підключено</div>
+      <button id="submit-4" class="primary">Зафіксувати</button>
+    </section>
+  </main>
+
+  <script type="module" src="/station/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+"""Застосунок Monitor Production."""

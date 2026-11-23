@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сервісний режим</title>
+  <link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>Сервісний режим</div>
+    <div style="margin-left:auto"><a href="/" style="color:#fff">Назад</a></div>
+  </header>
+
+  <main>
+    <div id="message" class="message" hidden></div>
+
+    <section class="card">
+      <h2>Поточна партія</h2>
+      <div id="current-batch">Завантаження…</div>
+      <div class="progress" id="progress" hidden><span></span></div>
+
+      <div class="row" style="margin-top:12px">
+        <label>Змінити план
+          <input id="edit-plan" type="number" min="0">
+        </label>
+        <button id="save-plan">Зберегти план</button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="new-batch">Нова партія</button>
+        <button id="close-batch">Закрити партію</button>
+      </div>
+
+      <div id="new-batch-form" class="card" style="margin-top:12px" hidden>
+        <h3>Нова партія</h3>
+        <label>Модель
+          <select id="new-model"></select>
+        </label>
+        <label>План
+          <input id="new-plan" type="number" min="0">
+        </label>
+        <div class="row">
+          <button id="create-batch" class="primary">Створити</button>
+          <button id="cancel-new">Скасувати</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <label>Зробити поточною
+          <select id="prev-batch"></select>
+        </label>
+        <button id="open-batch">Відкрити</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Картка світильника</h2>
+      <label>Штрихкод
+        <input id="card-barcode" data-scan autocomplete="off">
+      </label>
+      <div id="card"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/service/index.js"></script>
+</body>
+</html>

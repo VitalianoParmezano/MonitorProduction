@@ -1,0 +1,12 @@
+# secrets / local
+.env
+certs/
+
+# uploaded files (photos, datasheets)
+uploads/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Адміністрування</title>
+  <link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>Адміністрування</div>
+    <div style="margin-left:auto"><a href="/" style="color:#fff">Назад</a></div>
+  </header>
+
+  <main>
+    <div id="message" class="message" hidden></div>
+
+    <section class="card" id="login">
+      <h2>Вхід</h2>
+      <label>Логін
+        <input id="login-user" autocomplete="username">
+      </label>
+      <label>Пароль
+        <input id="login-pass" type="password" autocomplete="current-password">
+      </label>
+      <button id="login-btn" class="primary">Увійти</button>
+    </section>
+
+    <section class="card" id="workspace" hidden>
+      <h2>Моделі</h2>
+
+      <div class="card" id="model-form">
+        <h3 id="form-title">Додати модель</h3>
+        <label>Назва
+          <input id="m-name">
+        </label>
+        <div class="row">
+          <label>Ліміт ізоляції, МОм
+            <input id="m-insulation" type="number" step="any" min="0">
+          </label>
+          <label>Ліміт заземлення, Ом
+            <input id="m-earth" type="number" step="any" min="0">
+          </label>
+        </div>
+        <label>Datasheet (PDF, за бажанням)
+          <input id="m-datasheet" type="file" accept="application/pdf">
+        </label>
+        <div class="row">
+          <button id="save-model" class="primary">Зберегти</button>
+          <button id="reset-form">Очистити</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Список моделей</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Назва</th>
+              <th>Ізоляція, МОм</th>
+              <th>Заземлення, Ом</th>
+              <th>Datasheet</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="models-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/index.js"></script>
+</body>
+</html>
