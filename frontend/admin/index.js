@@ -1,36 +1,14 @@
-// Адмінка: CRUD моделей продукції (HTTP Basic).
+// Адмінка: CRUD моделей продукції.
+// Автентифікація — рідне вікно браузера (HTTP Basic). Бекенд повертає
+// 401 + WWW-Authenticate, тому браузер сам показує діалог входу.
 import { showMessage } from "/shared/ui.js";
 
-let auth = sessionStorage.getItem("adminAuth") || null;
-
-function setAuth(user, pass) {
-  auth = btoa(`${user}:${pass}`);
-  sessionStorage.setItem("adminAuth", auth);
-}
-
-const loginBox = document.getElementById("login");
-const workspace = document.getElementById("workspace");
-
-function showLogin() {
-  loginBox.hidden = false;
-  workspace.hidden = true;
-  auth = null;
-  sessionStorage.removeItem("adminAuth");
-}
-
-function showWorkspace() {
-  loginBox.hidden = true;
-  workspace.hidden = false;
-}
-
 async function adminFetch(path, opts = {}) {
-  const headers = Object.assign({}, opts.headers || {});
-  if (auth) headers["Authorization"] = `Basic ${auth}`;
-  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  const res = await fetch(path, opts);
 
   if (res.status === 401) {
-    showLogin();
-    throw new Error("Потрібен вхід");
+    showMessage("Доступ заборонено. Оновіть сторінку та введіть логін і пароль у вікні браузера.", "err");
+    throw new Error("Доступ заборонено");
   }
 
   let data = null;
@@ -44,21 +22,6 @@ async function adminFetch(path, opts = {}) {
   }
   return data;
 }
-
-document.getElementById("login-btn").addEventListener("click", () => {
-  const user = document.getElementById("login-user").value;
-  const pass = document.getElementById("login-pass").value;
-  if (!user || !pass) { showMessage("Введіть логін і пароль", "err"); return; }
-  setAuth(user, pass);
-  init();
-});
-
-document.getElementById("login-user").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") document.getElementById("login-pass").focus();
-});
-document.getElementById("login-pass").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") document.getElementById("login-btn").click();
-});
 
 // --- CRUD моделей ---
 
@@ -186,11 +149,8 @@ document.getElementById("reset-form").addEventListener("click", resetForm);
 
 async function init() {
   try {
-    await adminFetch("/api/admin/products");
-    showWorkspace();
     await loadModels();
   } catch (e) {
-    showLogin();
     showMessage(e.message, "err");
   }
 }

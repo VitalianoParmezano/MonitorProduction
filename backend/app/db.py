@@ -1,7 +1,14 @@
 """Підключення до PostgreSQL через пул з'єднань (psycopg3, без ORM).
 
-Усі запити лише з параметрами (%s), без підстановки значень у текст SQL.
+З'єднання працюють у autocommit: одноопераційні запити (fetch_all/fetch_one/
+execute) виконуються й одразу фіксуються. Багатоопераційні зміни (наприклад,
+створення партії) обгортаються в conn.transaction() на місці виклику.
+
+Запити до даних використовують лише параметри (%s), без ручної підстановки
+значень у текст SQL. Єдиний виняток — SET TIME ZONE, де PostgreSQL не
+дозволяє плейсхолдери; там літерал екранується через psycopg.sql.Literal.
 """
+from psycopg import sql
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
@@ -11,9 +18,15 @@ _pool: ConnectionPool | None = None
 
 
 def _configure(conn) -> None:
-    """Налаштування кожного нового з'єднання: часовий пояс Europe/Kyiv."""
+    """Налаштування кожного нового з'єднання: часовий пояс Europe/Kyiv.
+
+    PostgreSQL не дозволяє параметри-плейсхолдери в SET, тому літерал
+    підставляємо через psycopg.sql.Literal (коректно екранує рядок).
+    """
     with conn.cursor() as cur:
-        cur.execute("SET TIME ZONE %s", (config.APP_TIMEZONE,))
+        cur.execute(
+            sql.SQL("SET TIME ZONE {}").format(sql.Literal(config.APP_TIMEZONE))
+        )
 
 
 def get_pool() -> ConnectionPool:
@@ -27,6 +40,7 @@ def get_pool() -> ConnectionPool:
                 "dbname": config.POSTGRES_DB,
                 "user": config.POSTGRES_USER,
                 "password": config.POSTGRES_PASSWORD,
+                "autocommit": True,
             },
             min_size=1,
             max_size=10,
